@@ -1,30 +1,47 @@
 import styled from "styled-components"
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+export const API_URL = "https://mock-api.driven.com.br/api/v8/cineflex/movies";
 
 export default function HomePage() {
+    const [image, setImage] = useState([]);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const promise = axios.get(API_URL);
+
+        promise
+            .then((res) => {
+                setImage(res.data);
+                console.log(res.data);
+            })
+            .catch((err) => {
+                setError(err.response.data);
+                console.log(err.response.data);
+            });
+    }, []);
+
     return (
         <PageContainer>
             Selecione o filme
 
-            <ListContainer>
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-            </ListContainer>
-
+            {error ? (
+                <p>Erro ao carregar filmes.</p>
+            ) : (
+                <ListContainer>
+                    {image.map((img) => (
+                        <Link to={`/sessoes/${img.id}`} key={img.id}>
+                            <MovieContainer data-test="movie">
+                                <img src={img.posterURL} alt="poster" />
+                            </MovieContainer>
+                        </Link>
+                    ))}
+                </ListContainer>
+            )}
         </PageContainer>
-    )
+    );
 }
 
 const PageContainer = styled.div`
