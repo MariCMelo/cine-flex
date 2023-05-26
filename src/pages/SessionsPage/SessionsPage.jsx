@@ -33,8 +33,8 @@ export default function SessionsPage() {
                     </p>
                     {d.showtimes.map((showtime) => (
                         <ButtonsContainer key={showtime.id}>
-                            <Link to={`/assentos/${showtime.id}`}>
-                                <button data-test="showtime">{showtime.name}</button>
+                            <Link to={`/assentos/${showtime.id}`} data-test="showtime">  
+                                <button >{showtime.name}</button>
                             </Link>
                         </ButtonsContainer>
                     ))}
