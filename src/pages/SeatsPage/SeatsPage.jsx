@@ -3,15 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 
-export default function SeatsPage() {
+export default function SeatsPage({setSuccessInfo}) {
   const [seat, setSeat] = useState({ seats: [] });
   const [movie, setMovie] = useState([]);
   const [day, setDay] = useState([]);
   const [section, setSection] = useState([]);
   const [selectedSeatArr, setSelectedSeatArr] = useState([]);
   const [form, setForm] = useState({ name: "", cpf: "" });
-
-    const [successInfo, setSuccessInfo] = useState({});
+  // const [successInfo, setSuccessInfo] = useState({});
 
   const { idSession } = useParams();
   const navigate = useNavigate();
@@ -46,15 +45,15 @@ export default function SeatsPage() {
   }
 
   function buyTicket(e) {
-    // console.log(setSuccessInfo)
     e.preventDefault();
-    const urlBuy = `https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many`
+  
+    const urlBuy = `https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many`;
     const ids = selectedSeatArr.map((s) => s.id);
     const body = { ...form, ids };
-
-
-    axios.post(`${urlBuy}`, body)
-      .then((res) => {
+  
+    axios
+      .post(urlBuy, body)
+      .then(() => {
         const info = {
           movie: movie.title,
           date: day.date,
@@ -63,14 +62,12 @@ export default function SeatsPage() {
           cpf: form.cpf,
           seats: selectedSeatArr.map((s) => s.name)
         };
-        
+        console.log(info)
         setSuccessInfo(info);
-        console.log(info) 
         navigate("/sucesso");
       })
-      .catch(err => alert(err.response.data.message))
+      .catch((err) => alert(err.response.data.message));
   }
-
   function handleForm(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }

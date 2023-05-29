@@ -1,21 +1,12 @@
 import styled from "styled-components"
-import { Link } from "react-router-dom"
-
-
+import { Link, useLocation } from "react-router-dom"
 
 
 export default function SuccessPage({ successInfo }) {
     const { movie, date, hour, buyer, cpf, seat } = successInfo
-
     
-
-    
-
     return (
         <PageContainer>
-
-<button onClick={() => console.log(successInfo)}></button>
-
             <h1>Pedido feito <br /> com sucesso!</h1>
 
             <TextContainer data-test="movie-info">

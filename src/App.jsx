@@ -20,10 +20,10 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/assentos/:idSession" element={<SeatsPage />} />
+        <Route path="/assentos/:idSession" element={<SeatsPage setSuccessInfo={setSuccessInfo}/>} />
         <Route
           path="/sessoes/:idMovie"
-          element={<SessionsPage setSuccessInfo={setSuccessInfo} />}
+          element={<SessionsPage />}
         />
         <Route
           path="/sucesso"

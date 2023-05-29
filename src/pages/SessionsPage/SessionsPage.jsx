@@ -19,7 +19,7 @@ export default function SessionsPage() {
             })
             .catch((err) => {
                 console.log(err);
-                // Defina a variável setError e lide com o erro aqui
+                
             });
     }, [idMovie]);
 
