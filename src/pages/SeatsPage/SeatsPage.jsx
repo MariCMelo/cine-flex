@@ -135,7 +135,7 @@ export default function SeatsPage({setSuccessInfo}) {
       </form>
 
 
-      <FooterContainer>
+      <FooterContainer data-test="footer">
         <div>
           <img src={movie.posterURL} alt="poster" />
         </div>
