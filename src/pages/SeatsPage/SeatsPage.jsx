@@ -3,15 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 
-export default function SeatsPage({setSuccessInfo}) {
+export default function SeatsPage({ setSuccessInfo }) {
   const [seat, setSeat] = useState({ seats: [] });
   const [movie, setMovie] = useState([]);
   const [day, setDay] = useState([]);
   const [section, setSection] = useState([]);
   const [selectedSeatArr, setSelectedSeatArr] = useState([]);
   const [form, setForm] = useState({ name: "", cpf: "" });
-  // const [successInfo, setSuccessInfo] = useState({});
-
   const { idSession } = useParams();
   const navigate = useNavigate();
 
@@ -46,11 +44,11 @@ export default function SeatsPage({setSuccessInfo}) {
 
   function buyTicket(e) {
     e.preventDefault();
-  
+
     const urlBuy = `https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many`;
     const ids = selectedSeatArr.map((s) => s.id);
     const body = { ...form, ids };
-  
+
     axios
       .post(urlBuy, body)
       .then(() => {
@@ -68,7 +66,7 @@ export default function SeatsPage({setSuccessInfo}) {
       })
       .catch((err) => alert(err.response.data.message));
   }
-  function handleForm(e) {
+  function handleInputChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
@@ -113,9 +111,8 @@ export default function SeatsPage({setSuccessInfo}) {
             placeholder="Digite seu nome..."
             name="name"
             value={form.name}
-            onChange={handleForm}
+            onChange={handleInputChange}
             required
-            
           />
 
           <label htmlFor="cpf">CPF do Comprador:</label>
@@ -125,9 +122,8 @@ export default function SeatsPage({setSuccessInfo}) {
             placeholder="Digite seu CPF..."
             name="cpf"
             value={form.cpf}
-            onChange={handleForm}
+            onChange={handleInputChange}
             required
-            
           />
 
           <button type="submit" data-test="book-seat-btn">Reservar Assento(s)</button>
@@ -149,7 +145,6 @@ export default function SeatsPage({setSuccessInfo}) {
     </PageContainer>
   );
 }
-
 
 const PageContainer = styled.div`
   display: flex;

@@ -1,37 +1,39 @@
-import styled from "styled-components"
-import { Link, useLocation } from "react-router-dom"
-
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export default function SuccessPage({ successInfo }) {
-    const { movie, date, hour, buyer, cpf, seat } = successInfo
-    
-    return (
-        <PageContainer>
-            <h1>Pedido feito <br /> com sucesso!</h1>
+  const { movie, date, hour, buyer, cpf, seats } = successInfo;
 
-            <TextContainer data-test="movie-info">
-                <strong><p>Filme e sessão</p></strong>
-                <p>{movie}</p>
-                <p>{date} - {hour}</p>
-            </TextContainer>
+  return (
+    <PageContainer>
+      <h1>Pedido feito <br /> com sucesso!</h1>
 
-            <TextContainer data-test="seats-info">
-                <strong><p>Ingressos</p></strong>
-                {/* {seat.map(s => <p>Assento {s}</p>)} */}
-            </TextContainer>
+      <TextContainer data-test="movie-info">
+        <strong><p>Filme e sessão</p></strong>
+        <p>{movie}</p>
+        <p>{`${date} - ${hour}`}</p>
+      </TextContainer>
 
-            <TextContainer data-test="client-info">
-                <strong><p>Comprador</p></strong>
-                <p>Nome: {buyer}</p>
-                <p>CPF: {cpf}</p>
-            </TextContainer>
+      <TextContainer data-test="seats-info">
+        <strong><p>Ingressos</p></strong>
+        {seats.map((s) => (
+          <p key={s}>{`Assento ${s}`}</p>
+        ))}
+      </TextContainer>
 
-            <Link to="/" data-test="go-home-btn">
-                <button>Voltar para Home</button>
-            </Link>
-        </PageContainer>
-    )
+      <TextContainer data-test="client-info">
+        <strong><p>Comprador</p></strong>
+        <p>{`Nome: ${buyer}`}</p>
+        <p>{`CPF: ${cpf}`}</p>
+      </TextContainer>
+
+      <Link to="/" data-test="go-home-btn">
+        <button>Voltar para Home</button>
+      </Link>
+    </PageContainer>
+  );
 }
+
 const PageContainer = styled.div`
     display: flex;
     flex-direction: column;

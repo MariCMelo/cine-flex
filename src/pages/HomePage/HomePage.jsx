@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export const API_URL = "https://mock-api.driven.com.br/api/v8/cineflex/movies";
-
 export default function HomePage() {
     const [image, setImage] = useState([]);
     const [error, setError] = useState(null);
-
+    const urlMovies = "https://mock-api.driven.com.br/api/v8/cineflex/movies";
     useEffect(() => {
-        const promise = axios.get(API_URL);
+        const promise = axios.get(urlMovies);
 
         promise
             .then((res) => {
