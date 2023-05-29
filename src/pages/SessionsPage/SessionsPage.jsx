@@ -27,8 +27,8 @@ export default function SessionsPage() {
         <PageContainer>
             <h2>Selecione o horário</h2>
             {day.map((d) => (
-                <SessionContainer key={d.weekday}>
-                    <p data-test="movie-day">
+                <SessionContainer data-test="movie-day" key={d.weekday}>
+                    <p>
                         {d.weekday} - {d.date}
                     </p>
                     {d.showtimes.map((showtime) => (
