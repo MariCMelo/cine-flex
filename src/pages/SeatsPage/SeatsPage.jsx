@@ -55,7 +55,7 @@ export default function SeatsPage({ setSuccessInfo }) {
         const info = {
           movie: movie.title,
           date: day.date,
-          hour: "15h",
+          hour: section.name,
           buyer: form.name,
           cpf: form.cpf,
           seats: selectedSeatArr.map((s) => s.name)
