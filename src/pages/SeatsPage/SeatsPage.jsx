@@ -1,25 +1,26 @@
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import styled from "styled-components";
 
 export default function SeatsPage() {
   const [seat, setSeat] = useState({ seats: [] });
   const [movie, setMovie] = useState([]);
   const [day, setDay] = useState([]);
   const [section, setSection] = useState([]);
-  const [selectedSeat, setSelectedSeat] = useState([]);
   const [selectedSeatArr, setSelectedSeatArr] = useState([]);
-  const [selectedSeatId, setSelectedSeatId] = useState([]);
-  const [name, setName] = useState("");
-  const [CPF, setCPF] = useState("");
+  const [form, setForm] = useState({ name: "", cpf: "" });
+
+    const [successInfo, setSuccessInfo] = useState({});
+
   const { idSession } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const urlSeats = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${idSession}/seats`;
-    const promise = axios.get(urlSeats);
 
-    promise
+    axios
+      .get(urlSeats)
       .then((res) => {
         setSeat(res.data);
         setMovie(res.data.movie);
@@ -27,24 +28,55 @@ export default function SeatsPage() {
         setSection(res.data);
       })
       .catch((err) => console.log(err.response.data));
-  }, []);
+  }, [idSession]);
 
-  function reserveSeat(s) {
-    if (!s.isAvailable) {
+  function reserveSeat(selectedSeat) {
+    if (!selectedSeat.isAvailable) {
       alert("Esse assento não está disponível");
     } else {
-      if (selectedSeatArr.includes(s.id)) {
-        setSelectedSeat(selectedSeatId.filter((index) => index !== s.id));
-        setSelectedSeatArr(selectedSeatArr.filter((index) => index !== s.id));
+      const isSelected = selectedSeatArr.some((seat) => seat.id === selectedSeat.id);
+
+      if (isSelected) {
+        const updatedSeatArr = selectedSeatArr.filter((seat) => seat.id !== selectedSeat.id);
+        setSelectedSeatArr(updatedSeatArr);
       } else {
-        setSelectedSeatId([...selectedSeatArr, s.id]);
+        setSelectedSeatArr([...selectedSeatArr, selectedSeat]);
       }
     }
   }
 
+  function buyTicket(e) {
+    // console.log(setSuccessInfo)
+    e.preventDefault();
+    const urlBuy = `https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many`
+    const ids = selectedSeatArr.map((s) => s.id);
+    const body = { ...form, ids };
+
+
+    axios.post(`${urlBuy}`, body)
+      .then((res) => {
+        const info = {
+          movie: movie.title,
+          date: day.date,
+          hour: "15h",
+          buyer: form.name,
+          cpf: form.cpf,
+          seats: selectedSeatArr.map((s) => s.name)
+        };
+        
+        setSuccessInfo(info);
+        console.log(info) 
+        navigate("/sucesso");
+      })
+      .catch(err => alert(err.response.data.message))
+  }
+
+  function handleForm(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
   return (
     <PageContainer>
-      Selecione o(s) assento(s)
       <SeatsContainer>
         {seat.seats.map((s) => (
           <SeatItem
@@ -52,7 +84,7 @@ export default function SeatsPage() {
             key={s.id}
             onClick={() => reserveSeat(s)}
             isAvailable={s.isAvailable}
-            isSelected={selectedSeatId.includes(s.id)}
+            isSelected={selectedSeatArr.some((seat) => seat.id === s.id)}
           >
             {s.name}
           </SeatItem>
@@ -61,30 +93,52 @@ export default function SeatsPage() {
 
       <CaptionContainer>
         <CaptionItem>
-          <CaptionCircle type="selecionado" />
+          <CaptionCircle status={"selected"} />
           Selecionado
         </CaptionItem>
         <CaptionItem>
-          <CaptionCircle type="disponivel" />
+          <CaptionCircle status={"available"} />
           Disponível
         </CaptionItem>
         <CaptionItem>
-          <CaptionCircle type="indisponivel" />
+          <CaptionCircle status={"unavailable"} />
           Indisponível
         </CaptionItem>
       </CaptionContainer>
 
-      <FormContainer>
-        Nome do Comprador:
-        <input data-test="client-name" placeholder="Digite seu nome..." />
+      <form onSubmit={buyTicket}>
+        <FormContainer >
 
-        CPF do Comprador:
-        <input data-test="client-cpf" placeholder="Digite seu CPF..." />
+          <label htmlFor="name">Nome do Comprador:</label>
+          <input
+            data-test="client-name"
+            id="name"
+            placeholder="Digite seu nome..."
+            name="name"
+            value={form.name}
+            onChange={handleForm}
+            required
+            
+          />
 
-        <button data-test="book-seat-btn">Reservar Assento(s)</button>
-      </FormContainer>
+          <label htmlFor="cpf">CPF do Comprador:</label>
+          <input
+            data-test="client-cpf"
+            id="cpf"
+            placeholder="Digite seu CPF..."
+            name="cpf"
+            value={form.cpf}
+            onChange={handleForm}
+            required
+            
+          />
 
-      <FooterContainer data-test="footer">
+          <button type="submit" data-test="book-seat-btn">Reservar Assento(s)</button>
+        </FormContainer>
+      </form>
+
+
+      <FooterContainer>
         <div>
           <img src={movie.posterURL} alt="poster" />
         </div>
@@ -98,6 +152,7 @@ export default function SeatsPage() {
     </PageContainer>
   );
 }
+
 
 const PageContainer = styled.div`
   display: flex;
@@ -148,21 +203,21 @@ const CaptionContainer = styled.div`
 const CaptionCircle = styled.div`
   border: 1px solid
     ${(props) =>
-      props.type === "selecionado"
-        ? "#0e7d71"
-        : props.type === "disponivel"
+    props.status === "selected"
+      ? "#0e7d71"
+      : props.status === "available"
         ? "#7b8b99"
-        : props.type === "indisponivel"
-        ? "#f7c52b"
-        : "none"};
+        : props.status === "unavailable"
+          ? "#f7c52b"
+          : "none"};
   background-color: ${(props) =>
-    props.type === "selecionado"
+    props.status === "selected"
       ? "#1aae9e"
-      : props.type === "disponivel"
-      ? "#c3cfd9"
-      : props.type === "indisponivel"
-      ? "#fbe192"
-      : "none"};
+      : props.status === "available"
+        ? "#c3cfd9"
+        : props.status === "unavailable"
+          ? "#fbe192"
+          : "none"};
   height: 25px;
   width: 25px;
   border-radius: 25px;
@@ -182,7 +237,7 @@ const CaptionItem = styled.div`
 const SeatItem = styled.div`
   border: 1px solid
     ${(props) =>
-      !props.isAvailable ? "#f7c52b" : props.isSelected ? "#0e7d71" : "#7b8b99"};
+    !props.isAvailable ? "#f7c52b" : props.isSelected ? "#0e7d71" : "#7b8b99"};
   background-color: ${(props) =>
     !props.isAvailable ? "#fbe192" : props.isSelected ? "#1aae9e" : "#c3cfd9"};
   height: 25px;

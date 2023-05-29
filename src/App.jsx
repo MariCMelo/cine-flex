@@ -1,31 +1,40 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import styled from "styled-components";
 import HomePage from "./pages/HomePage/HomePage";
 import SeatsPage from "./pages/SeatsPage/SeatsPage";
 import SessionsPage from "./pages/SessionsPage/SessionsPage";
 import SuccessPage from "./pages/SuccessPage/SuccessPage";
-
-
+import axios from "axios";
 
 export default function App() {
+  axios.defaults.headers.common['Authorization'] = '5bGsurQzS6RwohMxf7xqfyGT'
+
+  const [successInfo, setSuccessInfo] = useState({});
+
   return (
     <BrowserRouter>
-      <Link to="/">
-        <NavContainer>CINEFLEX</NavContainer>
-      </Link>
+      <Header>
+        <Link to="/">CINEFLEX</Link>
+      </Header>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/assentos/:idSession" element={<SeatsPage />} />
-        <Route path="/sessoes/:idMovie" element={<SessionsPage />} />
-        <Route path="/sucesso" element={<SuccessPage />} />
+        <Route
+          path="/sessoes/:idMovie"
+          element={<SessionsPage setSuccessInfo={setSuccessInfo} />}
+        />
+        <Route
+          path="/sucesso"
+          element={<SuccessPage successInfo={successInfo} />}
+        />
       </Routes>
     </BrowserRouter>
   );
 }
 
-const NavContainer = styled.div`
+const Header = styled.div`
   width: 100%;
   height: 70px;
   display: flex;
@@ -37,8 +46,9 @@ const NavContainer = styled.div`
   font-size: 34px;
   position: fixed;
   top: 0;
+
   a {
     text-decoration: none;
     color: #e8833a;
   }
-`;
+`
